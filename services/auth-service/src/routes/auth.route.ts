@@ -1,21 +1,24 @@
 import { Router, Request, Response } from "express";
-import { UserRepository } from "../repositories/userRepository";
-import  UserModel  from "../adapters/models/userSchema";
 import { UserUsecase } from "../usecases/UserUsecase";
 import { UserController } from "../controllers/user.controller";
+import { RabbitMQService } from "../infrastructure/message-broker/rabbitmq";
+import { JwtService } from "../services/jwt";
 
 export class AuthRouter {
   router = Router();
-
+  secret_key = "secret_key";
   constructor() {
-    const userRepository = new UserRepository(UserModel);
-    const userUsecase = new UserUsecase(userRepository);
+    const rabbitMQ = new RabbitMQService()
+    const jwt = new JwtService(this.secret_key)
+
+    const userUsecase = new UserUsecase(rabbitMQ , jwt);
     const controller = new UserController(userUsecase);
 
-    this.router.post("/api/register", (req: Request, res: Response) => {
+    this.router.post("/api/auth/register", (req: Request, res: Response) => {
       controller.register_user(req, res);
+      // console.log('got call on the auth service');
     });
-    this.router.post("/api/login", (req: Request, res: Response) => {
+    this.router.post("/api/auth/login", (req: Request, res: Response) => {
       controller.login_user(req, res);
     });
   }

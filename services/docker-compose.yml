@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq-container
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - my-network  # Specify the network for the rabbitmq service
+
+  auth-service:
+    image: auth-service-image
+    container_name: auth-service-container
+    ports:
+      - "3001:3001"
+    depends_on:
+      - rabbitmq
+    networks:
+      - my-network  # Specify the network for the auth-service service
+
+networks:
+  my-network:
+
+volumes:
+  rabbitmq-data:
