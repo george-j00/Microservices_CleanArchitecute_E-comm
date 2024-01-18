@@ -16,11 +16,12 @@ export class AuthRouter {
 
     this.router.post("/api/auth/register", (req: Request, res: Response) => {
       controller.register_user(req, res);
-      // console.log('got call on the auth service');
     });
+
     this.router.post("/api/auth/login", (req: Request, res: Response) => {
       controller.login_user(req, res);
     });
+
   }
 }
 

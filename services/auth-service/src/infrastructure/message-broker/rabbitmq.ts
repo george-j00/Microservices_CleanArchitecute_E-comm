@@ -40,7 +40,7 @@ export class RabbitMQService {
       await this.channel.assertQueue(queue, { durable: true });
     }
 
-    return new Promise((resolve) => {
+    return new Promise((resolve ,reject) => {
       if (this.channel) {
         this.channel.sendToQueue(
           queue,
@@ -50,12 +50,16 @@ export class RabbitMQService {
 
         // Assuming that the consumer will send back a response with the same correlationId
         this.channel.consume(
-          queue,
+          queue, 
           (msg) => {
             if (msg) {
               if (msg.properties.correlationId === correlationId) {
                 const isValid = JSON.parse(msg.content.toString());
-                resolve(isValid);
+                if (isValid) {
+                  resolve(isValid);
+                }else{
+                  reject('Login failed : invalid credentials')
+                }
               }
             }
           },
@@ -64,4 +68,5 @@ export class RabbitMQService {
       }
     });
   }
+
 }
