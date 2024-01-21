@@ -1,21 +1,22 @@
 import { ProductEntity } from "../entity/product.entity";
 import { IProductUsecase } from "../interfaces/IProductUsecase";
+import { ProductRepository } from "../repository/productRepository";
 
 export class ProductUsecase implements IProductUsecase{
 
-    constructor(productRepository: ProductRepository){}
+    constructor(public productRepository: ProductRepository){}
     
-    add_product(productData: ProductEntity): Promise<void> {
-        throw new Error("Method not implemented.");
+    async add_product(productData: ProductEntity): Promise<void> {
+        await this.productRepository.add_product(productData)
     }
-    delete_product(productId: string): Promise<void> {
-        throw new Error("Method not implemented.");
+    async delete_product(productId: string): Promise<void> {
+        await this.productRepository.delete_product(productId)
     }
-    getProduct(productId: string): Promise<ProductEntity> {
-        throw new Error("Method not implemented.");
+    async getProduct(productId: string): Promise<ProductEntity | null> {
+       return await this.productRepository.getProduct(productId)
     }
-    getAllProduct(): Promise<ProductEntity[]> {
-        throw new Error("Method not implemented.");
+    async getAllProduct(): Promise<ProductEntity[]> {
+       return await this.productRepository.getAllProduct()
     }
     
 }

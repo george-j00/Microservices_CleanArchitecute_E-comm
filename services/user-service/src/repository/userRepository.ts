@@ -25,15 +25,17 @@ export class UserRepository implements IUserCase {
     }
   }
 
-  async login(email: string, password: string): Promise<boolean> {
+  async login(email: string, password: string): Promise<boolean | null> {
     try {
       const user = await this.UserModel.findOne({ email: email }).exec();
 
       if (user && user.password === password) {
         console.log('login successful');
         return true;
-      } else {
-        return false;
+      } 
+      else{
+        console.log('login failed'); 
+        return null; 
       }
     } catch (error) {
       console.error("Login failed:", error);

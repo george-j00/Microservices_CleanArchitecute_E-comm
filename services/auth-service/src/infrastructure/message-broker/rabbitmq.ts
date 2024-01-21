@@ -5,7 +5,8 @@ export class RabbitMQService {
   private channel: amqp.Channel | null = null;
 
   async initialize() {
-    const rabbitmqUrl = process.env.RABBITMQ_URL || "amqp://rabbitmq";
+    // const rabbitmqUrl = process.env.RABBITMQ_URL || "amqp://rabbitmq";
+    const rabbitmqUrl = process.env.RABBITMQ_URL || "amqp://localhost:5672";
     this.connection = await amqp.connect(rabbitmqUrl);
     this.channel = await this.connection.createChannel();
   }
@@ -15,13 +16,10 @@ export class RabbitMQService {
       await this.initialize();
     }
     if (this.channel) {
-      const queue = 'registerQueue';
+      const queue = "registerQueue";
       await this.channel.assertQueue(queue, { durable: true });
 
-      this.channel.sendToQueue(
-        queue,
-        Buffer.from(JSON.stringify(userData))
-      );
+      this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(userData)));
 
       console.log(`The user data is sent successfully`);
     } else {
@@ -29,44 +27,48 @@ export class RabbitMQService {
     }
   }
 
-  public async publichLoginCredentials(credentials: {
+  public async publicLoginCredentials(credentials: {
     email: string;
     password: string;
-  }): Promise<boolean> {
-    const queue = "loginQueue";
-    const correlationId = "12345"; // You may generate a unique ID for each request
+  }): Promise<any> {
+    const queue1 = "queue1";
+    const queue2 = "queue2";
+    const correlationId = "12345";
 
-    if (this.channel) {
-      await this.channel.assertQueue(queue, { durable: true });
+    if (!this.channel) {
+      await this.initialize(); 
     }
 
-    return new Promise((resolve ,reject) => {
+    if (this.channel) {
+      await this.channel.assertQueue(queue1, { durable: true });
+      await this.channel.assertQueue(queue2, { durable: true });
+    }
+
+    return new Promise((resolve, reject) => {
       if (this.channel) {
         this.channel.sendToQueue(
-          queue,
+          queue1,
           Buffer.from(JSON.stringify(credentials)),
           { correlationId }
         );
 
-        // Assuming that the consumer will send back a response with the same correlationId
+        console.log("Login data sent to user service");
+
         this.channel.consume(
-          queue, 
+          queue2,
           (msg) => {
-            if (msg) {
-              if (msg.properties.correlationId === correlationId) {
-                const isValid = JSON.parse(msg.content.toString());
-                if (isValid) {
-                  resolve(isValid);
-                }else{
-                  reject('Login failed : invalid credentials')
-                }
-              }
+            if (msg && msg.properties.correlationId === correlationId) {
+              const loginResponse = JSON.parse(msg.content.toString());
+              resolve(loginResponse);
+              console.log("Response from the user service", loginResponse);
+              this.channel?.ack(msg);
             }
           },
-          { noAck: true }
+          { noAck: false }
         );
       }
     });
   }
 
 }
+    

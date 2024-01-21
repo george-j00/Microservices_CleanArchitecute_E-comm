@@ -33,16 +33,13 @@ class UserUsecase {
                 email: email,
                 password: password,
             };
-            const validationResponse = yield this.rabbitmqService.publichLoginCredentials(credentials);
-            if (validationResponse) {
-                const userCredentials = {
-                    email: email,
-                };
-                const token = this.jwtService.generateToken(userCredentials, "1h");
+            const loginResponse = yield this.rabbitmqService.publicLoginCredentials(credentials);
+            console.log('validationResponse in auth usecase', loginResponse);
+            if (loginResponse !== null) {
+                const token = this.jwtService.generateToken(email);
                 console.log("token generated", token);
                 return token;
             }
-            // Return null if login credentials are invalid
             return null;
         });
     }

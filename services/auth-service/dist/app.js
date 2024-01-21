@@ -22,9 +22,6 @@ app.use((req, res, next) => {
 });
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
-app.get('/start', (req, res) => {
-    res.send('Express + TypeScript Server');
-});
 app.use(auth_route_1.userRouter);
 app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${port}`);

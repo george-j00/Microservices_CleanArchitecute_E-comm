@@ -21,6 +21,7 @@ class RabbitMQService {
     }
     initialize() {
         return __awaiter(this, void 0, void 0, function* () {
+            // const rabbitmqUrl = process.env.RABBITMQ_URL || "amqp://rabbitmq";
             const rabbitmqUrl = process.env.RABBITMQ_URL || "amqp://localhost:5672";
             this.connection = yield amqplib_1.default.connect(rabbitmqUrl);
             this.channel = yield this.connection.createChannel();
@@ -32,7 +33,7 @@ class RabbitMQService {
                 yield this.initialize();
             }
             if (this.channel) {
-                const queue = 'registerQueue';
+                const queue = "registerQueue";
                 yield this.channel.assertQueue(queue, { durable: true });
                 this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(userData)));
                 console.log(`The user data is sent successfully`);
@@ -42,25 +43,31 @@ class RabbitMQService {
             }
         });
     }
-    publichLoginCredentials(credentials) {
+    publicLoginCredentials(credentials) {
         return __awaiter(this, void 0, void 0, function* () {
-            const queue = "loginQueue";
-            const correlationId = "12345"; // You may generate a unique ID for each request
-            if (this.channel) {
-                yield this.channel.assertQueue(queue, { durable: true });
+            const queue1 = "queue1";
+            const queue2 = "queue2";
+            const correlationId = "12345";
+            if (!this.channel) {
+                yield this.initialize();
             }
-            return new Promise((resolve) => {
+            if (this.channel) {
+                yield this.channel.assertQueue(queue1, { durable: true });
+                yield this.channel.assertQueue(queue2, { durable: true });
+            }
+            return new Promise((resolve, reject) => {
                 if (this.channel) {
-                    this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(credentials)), { correlationId });
-                    // Assuming that the consumer will send back a response with the same correlationId
-                    this.channel.consume(queue, (msg) => {
-                        if (msg) {
-                            if (msg.properties.correlationId === correlationId) {
-                                const isValid = JSON.parse(msg.content.toString());
-                                resolve(isValid);
-                            }
+                    this.channel.sendToQueue(queue1, Buffer.from(JSON.stringify(credentials)), { correlationId });
+                    console.log("Login data sent to user service");
+                    this.channel.consume(queue2, (msg) => {
+                        var _a;
+                        if (msg && msg.properties.correlationId === correlationId) {
+                            const loginResponse = JSON.parse(msg.content.toString());
+                            resolve(loginResponse);
+                            console.log("Response from the user service", loginResponse);
+                            (_a = this.channel) === null || _a === void 0 ? void 0 : _a.ack(msg);
                         }
-                    }, { noAck: true });
+                    }, { noAck: false });
                 }
             });
         });

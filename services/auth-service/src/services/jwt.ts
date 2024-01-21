@@ -6,9 +6,9 @@ export class JwtService {
   constructor(secretKey: string) {
     this.secretKey = secretKey;
   }
-
-  generateToken(data: any, expiresIn: string): string {
-    return jwt.sign(data, this.secretKey, { expiresIn });
+  
+  generateToken(email: string): string {
+    return jwt.sign({email}, this.secretKey, { expiresIn: '15m' });
   }
 
   verifyToken(token: string): any {

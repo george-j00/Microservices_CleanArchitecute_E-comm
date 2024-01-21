@@ -17,8 +17,10 @@ class UserRepository {
     register(user) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                console.log("user repo", user);
                 const newUser = new this.UserModel(user);
                 yield newUser.save();
+                console.log(newUser);
             }
             catch (error) {
                 console.error("Registration failed:", error);
@@ -31,10 +33,12 @@ class UserRepository {
             try {
                 const user = yield this.UserModel.findOne({ email: email }).exec();
                 if (user && user.password === password) {
+                    console.log('login successful');
                     return true;
                 }
                 else {
-                    return false;
+                    console.log('login failed');
+                    return null;
                 }
             }
             catch (error) {

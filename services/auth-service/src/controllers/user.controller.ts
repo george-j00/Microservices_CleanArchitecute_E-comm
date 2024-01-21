@@ -21,8 +21,15 @@ export class UserController {
   login_user = async (req: Request, res: Response) => {
     try {
       const {email ,password} = req.body;
-      const token = await this.userUsecase.login(email, password);
-      res.status(200).json(token);
+      const loginResponse = await this.userUsecase.login(email, password);
+
+    if (loginResponse !== null) {
+      res.status(200).json({ token: loginResponse });
+    } else {
+      res.status(401).json({ error: "Login failed" });
+      console.log("Login failed for user:", email);
+    }
+
     } catch (error) {
       res.status(500).send("Error while adding User");
       console.log("Error while adding => ", error);

@@ -26,8 +26,14 @@ class UserController {
         this.login_user = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const { email, password } = req.body;
-                const token = yield this.userUsecase.login(email, password);
-                res.status(200).json(token);
+                const loginResponse = yield this.userUsecase.login(email, password);
+                if (loginResponse !== null) {
+                    res.status(200).json({ token: loginResponse });
+                }
+                else {
+                    res.status(401).json({ error: "Login failed" });
+                    console.log("Login failed for user:", email);
+                }
             }
             catch (error) {
                 res.status(500).send("Error while adding User");

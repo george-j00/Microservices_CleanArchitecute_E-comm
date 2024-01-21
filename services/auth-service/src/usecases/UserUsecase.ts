@@ -26,19 +26,15 @@ export class UserUsecase implements IUserCase {
       password: password,
     };
 
-    const validationResponse =
-      await this.rabbitmqService.publichLoginCredentials(credentials);
+    const  loginResponse  =
+      await this.rabbitmqService.publicLoginCredentials(credentials);
 
-    if (validationResponse) {
-      const userCredentials = {
-        email: email,
-      };
-      const token = this.jwtService.generateToken(userCredentials, "1h");
+    console.log('validationResponse in auth usecase', loginResponse);
+    if (loginResponse !== null ) {
+      const token = this.jwtService.generateToken(email);
       console.log("token generated", token);
       return token;
     }
-
-    // Return null if login credentials are invalid
     return null;
   }
 
@@ -50,4 +46,6 @@ export class UserUsecase implements IUserCase {
 
     return isNameValid && isEmailValid && isPasswordValid;
   }
+
 }
+  

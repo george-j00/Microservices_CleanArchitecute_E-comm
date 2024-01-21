@@ -9,7 +9,7 @@ export class UserUsecase implements IUserCase{
     register(user: UserEntity): Promise<void> {
       return this.userRepository.register(user);
     }
-    login(email: string, password: string): Promise<boolean> {
+    login(email: string, password: string): Promise<boolean | null> {
         return this.userRepository.login(email, password);
     }
     

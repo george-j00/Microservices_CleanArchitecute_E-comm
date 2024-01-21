@@ -24,7 +24,7 @@ start(process.env.MONGODB_URI!);
 
 const rabbitMQ = async () => {
   await consumerMessage.consumeMessages()
-  await consumerMessage.loginConsumer()
+  await consumerMessage.loginCommunications()
 };
 
 rabbitMQ();
