@@ -15,15 +15,20 @@ export class ProductRouter {
 
         this.router.post('/api/product/add-product', (req: Request, res: Response) => {
             productController.add_Product(req, res);
+            // console.log('add product successfully');
+            
         });
         this.router.post('/api/product/delete-product', (req: Request, res: Response) => {
             productController.delete_product(req, res);
+
         });
-        this.router.get('/api/product/get-product', (req: Request, res: Response) => {
+        this.router.post('/api/product/get-product', (req: Request, res: Response) => {
             productController.get_one_Product(req, res);
+
         });
-        this.router.post('/api/product/get-all-products', (req: Request, res: Response) => {
+        this.router.get('/api/product/get-all-products', (req: Request, res: Response) => {
             productController.get_all_Product(req, res);
+
         });
     }
 }

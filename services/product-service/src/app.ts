@@ -11,6 +11,7 @@ const app : Express = express();
 const port = process.env.PORT;
 
 start(process.env.MONGODB_URI!)
+
 app.use(cookieParser());
 app.use(cors());
 

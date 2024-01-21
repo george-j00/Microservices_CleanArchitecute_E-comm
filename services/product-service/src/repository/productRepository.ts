@@ -2,7 +2,6 @@ import { Model } from "mongoose";
 import { ProductEntity } from "../entity/product.entity";
 import { IProductSchema } from "../interfaces/IProductSchema";
 import { IProductUsecase } from "../interfaces/IProductUsecase";
-import { ProductModel } from "../adapters/models/product.schema";
 
 export class ProductRepository implements IProductUsecase{
 
