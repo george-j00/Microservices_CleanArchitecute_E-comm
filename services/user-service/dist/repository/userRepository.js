@@ -47,5 +47,28 @@ class UserRepository {
             }
         });
     }
+    addAddress(userId, address) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const newUser = yield this.UserModel.findByIdAndUpdate({ _id: userId }, { $set: { address: address } }, { new: true });
+                console.log(newUser);
+            }
+            catch (error) {
+                console.error("can't add address:", error);
+                throw new Error("can't add address");
+            }
+        });
+    }
+    deleteAddress(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield this.UserModel.findByIdAndUpdate({ _id: userId }, { $set: { address: {} } }).exec();
+            }
+            catch (error) {
+                console.error("Can't delete address:", error);
+                throw new Error("Can't delete address");
+            }
+        });
+    }
 }
 exports.UserRepository = UserRepository;

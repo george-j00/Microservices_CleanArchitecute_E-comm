@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { IUserCase } from "../interfaces/iUserUsecase";
-import { IUserSchema } from "../interfaces/IUserShema";
+import { IShippingAddress, IUserSchema } from "../interfaces/IUserShema";
 import { Model } from "mongoose";
 import { UserEntity } from "../enitity/user.entity";
 
@@ -42,4 +42,23 @@ export class UserRepository implements IUserCase {
       throw new Error("Login failed");
     }
   }
+  async addAddress(userId : string , address: IShippingAddress): Promise<void> {
+    try {
+      const newUser =  await this.UserModel.findByIdAndUpdate({_id:userId} , {$set: {address: address}} , {new:true} );
+      console.log(newUser);
+    } catch (error) {
+      console.error("can't add address:", error);
+      throw new Error("can't add address");
+    }
+  }
+  async deleteAddress(userId : string): Promise<void> {
+    try {
+      await this.UserModel.findByIdAndUpdate({_id:userId} , {$set: {address:{}}}).exec();
+    } catch (error) {
+      console.error("Can't delete address:", error);
+      throw new Error("Can't delete address");
+    }
+  }
+
+
 }

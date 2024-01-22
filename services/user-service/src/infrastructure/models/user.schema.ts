@@ -15,6 +15,11 @@ const userSchema = new mongoose.Schema<IUserSchema>({
     type: String,
     required: true,
   },
+  address:{
+    district:{ type: String },
+    state:{ type: String },
+    pin:{ type: Number },
+  }
 });
 
 export const UserModel: Model<IUserSchema> = mongoose.model<IUserSchema>(

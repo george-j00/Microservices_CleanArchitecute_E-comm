@@ -19,5 +19,10 @@ const userSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
+    address: {
+        district: { type: String },
+        state: { type: String },
+        pin: { type: Number },
+    }
 });
 exports.UserModel = mongoose_1.default.model("UserModel", userSchema);
